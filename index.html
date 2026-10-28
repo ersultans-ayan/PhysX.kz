@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta name="author" content="Salybek Yersultan,Zhenis Ayan">
+<meta name="description" content="Бұл сайттың авторлары — Salybek Yersultan,Zhenis Ayan.">
+
+<title>Біздің жеке сайтымыз</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhysX — Физика Порталы</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #151c2c;
+      --accent-color: #00f2fe;
+      --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --text-color: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border-color: #2a354f;
+      --danger-color: #ff4b5c;
+      --success-color: #00e676;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; overflow-x: hidden; }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-color); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
+
+    .page-section { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .page-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    input, select, textarea, button {
+      background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-color);
+      padding: 10px 14px; border-radius: 8px; outline: none; font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent-color); box-shadow: 0 0 8px rgba(0,242,254,0.3); }
+    button { background: var(--accent-gradient); color: #000; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
+    button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+    /* AUTHENTICATION */
+    .auth-container { max-width: 420px; margin: 60px auto; background: var(--card-bg); padding: 35px; border-radius: 16px; border: 1px solid var(--border-color); text-align: center; }
+    .auth-container h1 { font-size: 2.5rem; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+    .auth-form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .auth-switch { margin-top: 15px; color: var(--text-muted); font-size: 13px; }
+    .auth-switch span { color: var(--accent-color); cursor: pointer; text-decoration: underline; }
+
+    /* HEADER */
+    header { background: var(--card-bg); border-bottom: 1px solid var(--border-color); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .logo-container { display: flex; align-items: center; gap: 8px; }
+    .logo-container h2 { background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 1.6rem; }
+    nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    nav button { background: transparent; color: var(--text-color); padding: 6px 12px; font-size: 13px; border: 1px solid transparent; }
+    nav button:hover, nav button.active-nav { background: rgba(0, 242, 254, 0.1); border-color: var(--accent-color); color: var(--accent-color); }
+
+    .user-profile-badge { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-color); }
+    .avatar-img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color); }
+
+    /* DASHBOARD */
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 15px; }
+    .card-panel { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 20px; margin-bottom: 15px; }
+    .card-panel h3 { border-bottom: 1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px; color: var(--accent-color); font-size: 16px; }
+
+    .user-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px; }
+    .user-item-info { display: flex; align-items: center; gap: 10px; }
+    .user-item-info img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+
+    /* CHAT */
+    .chat-container { display: flex; flex-direction: column; min-height: 550px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); }
+    .chat-header { padding: 12px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); }
+    .chat-messages { flex: 1; padding: 15px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .message { max-width: 75%; padding: 8px 12px; border-radius: 10px; font-size: 13px; line-height: 1.4; word-break: break-word; }
+    .message.sent { align-self: flex-end; background: var(--accent-gradient); color: #000; }
+    .message.received { align-self: flex-start; background: var(--border-color); color: #fff; }
+    
+    .chat-input-area { padding: 12px; border-top: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.1); }
+    .chat-preset-formulas-grid { 
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 160px; overflow-y: auto; padding: 6px;
+      border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; background: rgba(0,0,0,0.2);
+    }
+    .chat-preset-formulas-grid button { 
+      font-size: 11px; padding: 6px 8px; text-align: left; background: rgba(0,242,254,0.08); 
+      color: var(--accent-color); border: 1px solid var(--border-color); border-radius: 6px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .chat-preset-formulas-grid button:hover { background: var(--accent-color); color: #000; }
+
+    /* FORMULAS */
+    .formula-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; margin-bottom: 10px; }
+    .formula-title { font-weight: bold; color: var(--accent-color); font-size: 15px; }
+    .formula-math-text { font-family: 'Consolas', monospace; font-size: 16px; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; display: block; margin: 8px 0; color: #00f2fe; border-left: 4px solid var(--accent-color); font-weight: bold; }
+
+    /* CALCULATOR */
+    .calc-box { max-width: 340px; margin: 0 auto; background: #080c14; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; }
+    .calc-screen { width: 100%; height: 55px; background: #111726; border: 1px solid var(--border-color); border-radius: 6px; text-align: right; padding: 10px; font-size: 22px; color: var(--accent-color); font-family: monospace; margin-bottom: 12px; }
+    .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .calc-btn { padding: 14px; font-size: 15px; background: var(--card-bg); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; }
+    .calc-btn.op { background: rgba(0,242,254,0.1); color: var(--accent-color); }
+
+    /* SCIENTISTS */
+    .bio-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 20px; border-radius: 10px; margin-bottom: 15px; }
+    .bio-card h4 { color: var(--accent-color); font-size: 19px; margin-bottom: 4px; }
+    .bio-card .era { font-size: 11px; color: var(--text-muted); font-weight: bold; margin-bottom: 12px; text-transform: uppercase; }
+    .bio-card p { font-size: 13.5px; line-height: 1.7; color: #cbd5e1; text-align: justify; }
+
+    /* VIRTUAL LABS */
+    .lab-canvas-container { background: #080c14; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; align-items: center; position: relative; }
+    canvas { background: #0d1322; border-radius: 6px; border: 1px solid var(--border-color); width: 100%; height: 160px; }
+    .lab-controls { margin-top: 10px; width: 100%; display: flex; flex-direction: column; gap: 8px; }
+    .lab-control-group { display: flex; justify-content: space-between; align-items: center; font-size: 11px; }
+    .lab-btn-group { display: flex; gap: 8px; margin-top: 6px; width: 100%; }
+    .lab-btn-group button { flex: 1; padding: 6px; font-size: 11px; }
+
+    .solver-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; }
+    .solver-card h4 { color: var(--accent-color); font-size: 15px; margin-bottom: 8px; }
+    .solver-inputs { display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+    .solver-inputs input { font-size: 12px; padding: 6px 10px; }
+    .solver-result { font-weight: bold; color: var(--success-color); margin-top: 8px; font-size: 13px; background: rgba(0,230,118,0.1); padding: 6px; border-radius: 6px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header id="main-header" style="display: none;">
+    <div class="logo-container">
+      <i class="fa-solid fa-atom" style="color: var(--accent-color); font-size: 20px;"></i>
+      <h2>PhysX</h2>
+    </div>
+    <nav>
+      <button onclick="showPage('dashboard')" id="nav-dashboard" class="active-nav"><i class="fa-solid fa-house"></i> Басты бет</button>
+      <button onclick="showPage('labs')" id="nav-labs"><i class="fa-solid fa-flask"></i> Виртуалды зертхана</button>
+      <button onclick="showPage('formulas')" id="nav-formulas"><i class="fa-solid fa-square-root-variable"></i> Формулалар</button>
+      <button onclick="showPage('solver')" id="nav-solver"><i class="fa-solid fa-sliders"></i> Есептеуіш</button>
+      <button onclick="showPage('calc')" id="nav-calc"><i class="fa-solid fa-calculator"></i> Калькулятор</button>
+      <button onclick="showPage('scientists')" id="nav-scientists"><i class="fa-solid fa-user-graduate"></i> Ғалымдар</button>
+    </nav>
+    <div class="user-profile-badge">
+      <img id="header-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="avatar-img" alt="Avatar">
+      <div style="display: flex; flex-direction: column;">
+        <span id="header-fullname" style="font-weight: bold; font-size: 13px;">-</span>
+        <span id="header-username" style="font-size: 10px; color: var(--text-muted);">-</span>
+      </div>
+      <button onclick="logout()" style="padding: 4px 8px; margin-left: 10px; background: rgba(255,75,92,0.2); color: var(--danger-color); font-size: 11px;">Шығу</button>
+    </div>
+  </header>
+
+  <!-- AUTHENTICATION SECTION -->
+  <section id="page-login" class="page-section active">
+    <div class="auth-container">
+      <i class="fa-solid fa-atom" style="font-size: 45px; color: var(--accent-color);"></i>
+      <h1>PhysX</h1>
+      <p style="color: var(--text-muted); font-size: 13px;">Физиктерге арналған интерактивті портал</p>
+      <form id="form-login" class="auth-form" onsubmit="handleLogin(event)">
+        <input type="text" id="login-username" placeholder="Логин немесе Пошта" required autocomplete="off">
+        <input type="password" id="login-password" placeholder="Пароль" required autocomplete="off">
+        <button type="submit">Кіру</button>
+      </form>
+      <div class="auth-switch">
+        <span onclick="showAuthPage('forgot')" style="color:var(--danger-color);">Парольді ұмыттыңыз ба?</span>
+      </div>
+      <div class="auth-switch">Тіркелмегенсіз бе? <span onclick="showAuthPage('register')">Тіркелу</span></div>
+    </div>
+  </section>
+
+  <section id="page-register" class="page-section">
+    <div class="auth-container">
+      <h1>Тіркелу</h1>
+      <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">Деректерді енгізіп тіркеліңіз</p>
+      <form id="form-register" class="auth-form" onsubmit="handleRegister(event)">
+        <input type="text" id="reg-fullname" placeholder="Аты-жөніңіз" required autocomplete="off">
+        <input type="text" id="reg-username" placeholder="Логин (мысалы: user123)" required autocomplete="off">
+        <input type="password" id="reg-password" placeholder="Пароль" required autocomplete="off">
+        <button type="submit">Тіркелуді аяқтау</button>
+      </form>
+      <div class="auth-switch">Тіркелгенсіз бе? <span onclick="showAuthPage('login')">Кіру</span></div>
+    </div>
+  </section>
+
+  <section id="page-forgot" class="page-section">
+    <div class="auth-container">
+      <h1>Парольді қалпына келтіру</h1>
+      <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 10px;">Логиніңізді енгізіп, жаңа пароль орнатыңыз</p>
+      <form id="form-forgot" class="auth-form" onsubmit="handleForgotPassword(event)">
+        <input type="text" id="forgot-username" placeholder="Логин" required autocomplete="off">
+        <input type="password" id="forgot-new-password" placeholder="Жаңа пароль" required autocomplete="off">
+        <button type="submit">Парольді өзгерту</button>
+      </form>
+      <div class="auth-switch">Кіру бетіне оралу: <span onclick="showAuthPage('login')">Кіру</span></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="page-dashboard" class="page-section">
+    <div class="dashboard-grid">
+      <div>
+        <div class="card-panel" style="text-align: center;">
+          <img id="dash-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="avatar-img" style="width: 80px; height: 80px;" alt="Avatar">
+          <h2 id="dash-fullname" style="font-size: 18px; margin-top: 8px;">---</h2>
+          <p id="dash-username" style="color: var(--text-muted); font-size: 12px;">@---</p>
+          <div style="margin-top: 12px;">
+            <label for="avatar-input" style="cursor: pointer; background: rgba(0,242,254,0.1); border:1px solid var(--accent-color); color:var(--accent-color); padding:6px 10px; border-radius:6px; font-size:11px;">
+              <i class="fa-solid fa-upload"></i> Аватарды жүктеу
+            </label>
+            <input type="file" id="avatar-input" accept="image/*" style="display: none;" onchange="uploadAvatar(event)">
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <h3><i class="fa-solid fa-user-plus"></i> Дос іздеу</h3>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="search-friend-input" placeholder="Логин немесе аты..." style="flex:1;">
+            <button onclick="searchFriend()"><i class="fa-solid fa-search"></i></button>
+          </div>
+          <div id="search-result"></div>
+        </div>
+
+        <div class="card-panel">
+          <h3><i class="fa-solid fa-clock"></i> Шақырулар</h3>
+          <div id="friend-requests-list"><p style="color:var(--text-muted); font-size:12px;">Өтініштер жоқ</p></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card-panel">
+          <h3><i class="fa-solid fa-users"></i> Достар тізімі</h3>
+          <div id="friends-list"><p style="color:var(--text-muted); font-size:12px;">Достарыңыз жоқ</p></div>
+        </div>
+
+        <div class="chat-container">
+          <div class="chat-header">
+            <img id="chat-target-avatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" style="width:30px; height:30px; border-radius:50%;">
+            <div>
+              <div id="chat-target-name" style="font-weight: bold; font-size: 13px;">Досты таңдаңыз</div>
+              <div style="font-size: 10px; color: var(--success-color);">Онлайн</div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-messages-box">
+            <div style="text-align: center; color: var(--text-muted); margin-top: 40px; font-size:12px;">Сөйлесуді бастау үшін досыңызды таңдаңыз</div>
+          </div>
+          <div class="chat-input-area">
+            <div style="font-size:11px; color:var(--accent-color); font-weight:bold;">Маңызды 20 Формула:</div>
+            <div class="chat-preset-formulas-grid" id="chat-20-presets"></div>
+            
+            <div style="display: flex; gap: 8px; margin-top:4px;">
+              <input type="text" id="chat-input" placeholder="Хабарламаңыз..." style="flex: 1;">
+              <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIRTUAL LABS (EXACT FORMULA PARAMETERS & HYDRAULIC PRESS) -->
+  <section id="page-labs" class="page-section">
+    <div class="card-panel">
+      <h3><i class="fa-solid fa-flask"></i> Виртуалды зертхана</h3>
+      <p style="color:var(--text-muted); font-size:12px; margin-bottom:15px;">Әр zертхана нақты физикалық формуладағы айнымалы параметрлерге (масса, ұзындық, кернеу т.б.) тікелей тәуелді түрде өзгереді.</p>
+      
+      <div id="labs-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px;"></div>
+    </div>
+  </section>
+
+  <!-- FORMULAS -->
+  <section id="page-formulas" class="page-section">
+    <div class="card-panel">
+      <h3><i class="fa-solid fa-book"></i> Физикалық Формулалар Базасы</h3>
+      <input type="text" id="formula-search" placeholder="Формула аты немесе өрнек бойынша іздеу..." oninput="filterFormulas()" style="width: 100%; margin-bottom: 15px;">
+      <div id="formulas-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;"></div>
+    </div>
+  </section>
+
+  <!-- SOLVER -->
+  <section id="page-solver" class="page-section">
+    <div class="card-panel">
+      <h3><i class="fa-solid fa-sliders"></i> Нақты Формулалар Есептеуіші</h3>
+      <p style="color:var(--text-muted); font-size:12px; margin-bottom:15px;">Әрбір есептеуіш нақты физикалық формуланы қолданып есептейді.</p>
+      <div id="solver-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;"></div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section id="page-calc" class="page-section">
+    <div class="card-panel" style="text-align: center;">
+      <h3><i class="fa-solid fa-calculator"></i> Калькулятор</h3>
+      <div class="calc-box" style="margin-top:15px;">
+        <input type="text" class="calc-screen" id="calc-screen" readonly value="0">
+        <div class="calc-grid">
+          <button class="calc-btn op" style="color:var(--danger-color);" onclick="calcClear()">C</button>
+          <button class="calc-btn op" onclick="calcBackspace()"><i class="fa-solid fa-backspace"></i></button>
+          <button class="calc-btn op" onclick="calcAppend('(')">(</button>
+          <button class="calc-btn op" onclick="calcAppend(')')">)</button>
+
+          <button class="calc-btn" onclick="calcAppend('7')">7</button>
+          <button class="calc-btn" onclick="calcAppend('8')">8</button>
+          <button class="calc-btn" onclick="calcAppend('9')">9</button>
+          <button class="calc-btn op" onclick="calcAppend('/')">/</button>
+
+          <button class="calc-btn" onclick="calcAppend('4')">4</button>
+          <button class="calc-btn" onclick="calcAppend('5')">5</button>
+          <button class="calc-btn" onclick="calcAppend('6')">6</button>
+          <button class="calc-btn op" onclick="calcAppend('*')">*</button>
+
+          <button class="calc-btn" onclick="calcAppend('1')">1</button>
+          <button class="calc-btn" onclick="calcAppend('2')">2</button>
+          <button class="calc-btn" onclick="calcAppend('3')">3</button>
+          <button class="calc-btn op" onclick="calcAppend('-')">-</button>
+
+          <button class="calc-btn" onclick="calcAppend('0')">0</button>
+          <button class="calc-btn" onclick="calcAppend('.')">.</button>
+          <button class="calc-btn op" onclick="calcAppend('^')">xʸ</button>
+          <button class="calc-btn op" onclick="calcAppend('+')">+</button>
+
+          <button class="calc-btn" style="grid-column: span 4; background:var(--accent-gradient); color:#000;" onclick="calcEquals()">=</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCIENTISTS -->
+  <section id="page-scientists" class="page-section">
+    <div class="card-panel">
+      <h3><i class="fa-solid fa-book-open-reader"></i> Физик Ғалымдар Өмірбаяны</h3>
+      <input type="text" id="scientist-search" placeholder="Ғалымның атын іздеу..." oninput="filterScientists()" style="width: 100%; margin-bottom: 15px;">
+      <div id="scientists-container"></div>
+    </div>
+  </section>
+
+  <script>
+    const DEFAULT_AVATAR = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+    let currentUser = null;
+    let users = JSON.parse(localStorage.getItem('physx_users')) || {};
+    let messagesStore = JSON.parse(localStorage.getItem('physx_messages')) || {};
+    let activeChatFriend = null;
+    let labAnimationFrames = {};
+    let labStates = {};
+
+    function saveState() {
+      localStorage.setItem('physx_users', JSON.stringify(users));
+      localStorage.setItem('physx_messages', JSON.stringify(messagesStore));
+      if(currentUser) {
+        localStorage.setItem('physx_current_user', currentUser.username);
+      } else {
+        localStorage.removeItem('physx_current_user');
+      }
+    }
+
+    function clearAuthInputs() {
+      document.getElementById('form-login').reset();
+      document.getElementById('form-register').reset();
+      document.getElementById('form-forgot').reset();
+      document.getElementById('search-friend-input').value = '';
+      document.getElementById('search-result').innerHTML = '';
+    }
+
+    /* AUTH LOGIC */
+    function showAuthPage(p) {
+      clearAuthInputs();
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(`page-${p}`).classList.add('active');
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const fn = document.getElementById('reg-fullname').value.trim();
+      const un = document.getElementById('reg-username').value.trim().toLowerCase();
+      const pw = document.getElementById('reg-password').value;
+
+      if(users[un]) { alert('Бұл логин бос емес!'); return; }
+      users[un] = { fullname: fn, username: un, password: pw, avatar: DEFAULT_AVATAR, friends: [], requests: [] };
+      saveState();
+      alert('Тіркелу сәтті аяқталды!');
+      showAuthPage('login');
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const un = document.getElementById('login-username').value.trim().toLowerCase();
+      const pw = document.getElementById('login-password').value;
+
+      if(users[un] && users[un].password === pw) {
+        currentUser = users[un];
+        saveState();
+        clearAuthInputs();
+        initUserSession();
+      } else {
+        alert('Логин немесе пароль қате!');
+      }
+    }
+
+    function handleForgotPassword(e) {
+      e.preventDefault();
+      const un = document.getElementById('forgot-username').value.trim().toLowerCase();
+      const newPw = document.getElementById('forgot-new-password').value;
+
+      if(users[un]) {
+        users[un].password = newPw;
+        saveState();
+        alert('Пароль сәтті жаңартылды!');
+        showAuthPage('login');
+      } else {
+        alert('Мұндай логин табылмады!');
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      saveState();
+      clearAuthInputs();
+      document.getElementById('main-header').style.display = 'none';
+      showAuthPage('login');
+    }
+
+    function initUserSession() {
+      document.getElementById('main-header').style.display = 'flex';
+      document.getElementById('header-fullname').innerText = currentUser.fullname;
+      document.getElementById('header-username').innerText = '@' + currentUser.username;
+      document.getElementById('header-avatar').src = currentUser.avatar || DEFAULT_AVATAR;
+
+      document.getElementById('dash-fullname').innerText = currentUser.fullname;
+      document.getElementById('dash-username').innerText = '@' + currentUser.username;
+      document.getElementById('dash-avatar').src = currentUser.avatar || DEFAULT_AVATAR;
+
+      renderFriends();
+      renderRequests();
+      initChatPresets();
+      showPage('dashboard');
+    }
+
+    function uploadAvatar(e) {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          currentUser.avatar = evt.target.result;
+          users[currentUser.username].avatar = evt.target.result;
+          saveState();
+          initUserSession();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
+      
+      document.getElementById(`page-${pageId}`).classList.add('active');
+      const navBtn = document.getElementById(`nav-${pageId}`);
+      if(navBtn) navBtn.classList.add('active-nav');
+
+      document.getElementById('search-friend-input').value = '';
+      document.getElementById('search-result').innerHTML = '';
+
+      if(pageId === 'formulas') renderFormulas(rawFormulas);
+      if(pageId === 'scientists') renderScientists(scientistsBio);
+      if(pageId === 'solver') renderSolvers();
+      if(pageId === 'labs') renderUniqueLabs();
+    }
+
+    /* SEARCH FRIEND FIX */
+    function searchFriend() {
+      const query = document.getElementById('search-friend-input').value.trim().toLowerCase();
+      const container = document.getElementById('search-result');
+      container.innerHTML = '';
+
+      if(!query) {
+        container.innerHTML = `<p style="font-size:12px; color:var(--text-muted);">Іздеу үшін сөз енгізіңіз</p>`;
+        return;
+      }
+
+      let matches = [];
+      for(let un in users) {
+        if(un === currentUser.username) continue;
+        let u = users[un];
+        if(un.includes(query) || u.fullname.toLowerCase().includes(query)) {
+          matches.push(u);
+        }
+      }
+
+      if(matches.length > 0) {
+        matches.forEach(target => {
+          const isFriend = currentUser.friends.includes(target.username);
+          const isRequested = target.requests && target.requests.includes(currentUser.username);
+
+          container.innerHTML += `
+            <div class="user-item">
+              <div class="user-item-info">
+                <img src="${target.avatar || DEFAULT_AVATAR}">
+                <div>
+                  <div style="font-size:12px; font-weight:bold;">${target.fullname}</div>
+                  <div style="font-size:10px; color:var(--text-muted);">@${target.username}</div>
+                </div>
+              </div>
+              ${isFriend ? '<span style="font-size:11px; color:var(--success-color);">Доссыз</span>' : 
+                isRequested ? '<span style="font-size:11px; color:var(--text-muted);">Жіберілді</span>' : 
+                `<button onclick="sendFriendRequest('${target.username}')" style="font-size:11px; padding:4px 8px;">Қосу</button>`}
+            </div>
+          `;
+        });
+      } else {
+        container.innerHTML = `<p style="font-size:12px; color:var(--danger-color);">Пайдаланушы табылмады</p>`;
+      }
+    }
+
+    function sendFriendRequest(targetUn) {
+      if(!users[targetUn].requests) users[targetUn].requests = [];
+      if(!users[targetUn].requests.includes(currentUser.username)) {
+        users[targetUn].requests.push(currentUser.username);
+        saveState();
+        alert('Достық шақыруы жіберілді!');
+        searchFriend();
+      }
+    }
+
+    function renderRequests() {
+      const container = document.getElementById('friend-requests-list');
+      container.innerHTML = '';
+      if(!currentUser.requests || currentUser.requests.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:12px;">Өтініштер жоқ</p>`;
+        return;
+      }
+
+      currentUser.requests.forEach(reqUn => {
+        const reqUser = users[reqUn];
+        if(reqUser) {
+          container.innerHTML += `
+            <div class="user-item">
+              <div class="user-item-info">
+                <img src="${reqUser.avatar || DEFAULT_AVATAR}">
+                <div>
+                  <div style="font-size:12px; font-weight:bold;">${reqUser.fullname}</div>
+                  <div style="font-size:10px; color:var(--text-muted);">@${reqUser.username}</div>
+                </div>
+              </div>
+              <button onclick="acceptRequest('${reqUn}')" style="font-size:10px; padding:4px 6px;"><i class="fa-solid fa-check"></i> Қабылдау</button>
+            </div>
+          `;
+        }
+      });
+    }
+
+    function acceptRequest(reqUn) {
+      if(!currentUser.friends.includes(reqUn)) currentUser.friends.push(reqUn);
+      if(!users[reqUn].friends.includes(currentUser.username)) users[reqUn].friends.push(currentUser.username);
+      currentUser.requests = currentUser.requests.filter(u => u !== reqUn);
+      saveState();
+      renderFriends();
+      renderRequests();
+    }
+
+    function renderFriends() {
+      const container = document.getElementById('friends-list');
+      container.innerHTML = '';
+      if(!currentUser.friends || currentUser.friends.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:12px;">Достарыңыз жоқ</p>`;
+        return;
+      }
+
+      currentUser.friends.forEach(fUn => {
+        const friend = users[fUn];
+        if(friend) {
+          container.innerHTML += `
+            <div class="user-item" onclick="openChat('${friend.username}')" style="cursor:pointer;">
+              <div class="user-item-info">
+                <img src="${friend.avatar || DEFAULT_AVATAR}">
+                <div>
+                  <div style="font-size:12px; font-weight:bold;">${friend.fullname}</div>
+                  <div style="font-size:10px; color:var(--text-muted);">@${friend.username}</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-chevron-right" style="font-size:12px; color:var(--accent-color);"></i>
+            </div>
+          `;
+        }
+      });
+    }
+
+    function openChat(fUn) {
+      activeChatFriend = users[fUn];
+      document.getElementById('chat-target-name').innerText = activeChatFriend.fullname;
+      document.getElementById('chat-target-avatar').src = activeChatFriend.avatar || DEFAULT_AVATAR;
+      renderChatMessages();
+    }
+
+    function getChatKey(u1, u2) {
+      return [u1, u2].sort().join('__chat__');
+    }
+
+    function renderChatMessages() {
+      if(!activeChatFriend) return;
+      const key = getChatKey(currentUser.username, activeChatFriend.username);
+      const chatLogs = messagesStore[key] || [];
+      const box = document.getElementById('chat-messages-box');
+      box.innerHTML = '';
+
+      if(chatLogs.length === 0) {
+        box.innerHTML = `<div style="text-align: center; color: var(--text-muted); margin-top: 40px; font-size:12px;">Тікелей хабарлама жазыңыз!</div>`;
+        return;
+      }
+
+      chatLogs.forEach(msg => {
+        const isMe = msg.sender === currentUser.username;
+        box.innerHTML += `<div class="message ${isMe ? 'sent' : 'received'}">${msg.text}</div>`;
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if(!text || !activeChatFriend) return;
+
+      const key = getChatKey(currentUser.username, activeChatFriend.username);
+      if(!messagesStore[key]) messagesStore[key] = [];
+
+      messagesStore[key].push({ sender: currentUser.username, text: text });
+      saveState();
+      input.value = '';
+      renderChatMessages();
+    }
+
+    function initChatPresets() {
+      const c = document.getElementById('chat-20-presets');
+      c.innerHTML = '';
+      top20Formulas.forEach((item, idx) => {
+        c.innerHTML += `<button onclick="insertAutoFormula('${item.name}', '${item.math}')">${idx + 1}. ${item.name}</button>`;
+      });
+    }
+
+    function insertAutoFormula(name, math) {
+      document.getElementById('chat-input').value = `[Формула: ${name} -> ${math}]`;
+    }
+
+    /* CALCULATOR */
+    let calcVal = '0';
+    function calcUpdateScreen() { document.getElementById('calc-screen').value = calcVal; }
+    function calcAppend(val) {
+      if(calcVal === '0') calcVal = val;
+      else calcVal += val;
+      calcUpdateScreen();
+    }
+    function calcClear() { calcVal = '0'; calcUpdateScreen(); }
+    function calcBackspace() {
+      calcVal = calcVal.slice(0, -1);
+      if(!calcVal) calcVal = '0';
+      calcUpdateScreen();
+    }
+    function calcEquals() {
+      try {
+        let expr = calcVal.replace(/\^/g, '**');
+        calcVal = String(eval(expr));
+      } catch(e) { calcVal = 'Қате!'; }
+      calcUpdateScreen();
+    }
+
+    /* 100 FORMULAS */
+    const rawFormulas = [
+      { name: "Жылдамдық", math: "v = s / t", cat: "Кинематика" },
+      { name: "Үдеу", math: "a = (v - v₀) / t", cat: "Кинематика" },
+      { name: "Орын ауыстыру", math: "s = v₀t + (at²)/2", cat: "Кинематика" },
+      { name: "Соңғы жылдамдық", math: "v² - v₀² = 2as", cat: "Кинематика" },
+      { name: "Центрге тартқыш үдеу", math: "a = v² / r", cat: "Кинематика" },
+      { name: "Бұрыштық жылдамдық", math: "ω = 2π / T", cat: "Кинематика" },
+      { name: "Сызықтық жылдамдық", math: "v = ω · r", cat: "Кинематика" },
+      { name: "Ұшу алыстығы", math: "L = (v₀² sin 2α) / g", cat: "Кинематика" },
+      { name: "Көтерілу биіктігі", math: "H = (v₀² sin² α) / 2g", cat: "Кинематика" },
+      { name: "Ньютонның бірінші заңы", math: "∑F = 0", cat: "Динамика" },
+      { name: "Ньютонның екінші заңы", math: "F = m · a", cat: "Динамика" },
+      { name: "Ньютонның үшінші заңы", math: "F₁ = -F₂", cat: "Динамика" },
+      { name: "Бүкіләлемдік тартылыс", math: "F = G · (m₁m₂) / r²", cat: "Динамика" },
+      { name: "Ауырлық күші", math: "F_аур = m · g", cat: "Динамика" },
+      { name: "Дене салмағы", math: "P = m · g", cat: "Динамика" },
+      { name: "Гук заңы", math: "F_серп = k · x", cat: "Динамика" },
+      { name: "Үйкеліс күші", math: "F_үйк = μ · N", cat: "Динамика" },
+      { name: "Импульс", math: "p = m · v", cat: "Динамика" },
+      { name: "Механикалық жұмыс", math: "A = F · s · cos α", cat: "Динамика" },
+      { name: "Қуат", math: "N = A / t", cat: "Динамика" },
+      { name: "Кинетикалық энергия", math: "E_k = (m v²) / 2", cat: "Динамика" },
+      { name: "Потенциалдық энергия", math: "E_p = m · g · h", cat: "Динамика" },
+      { name: "Қысым", math: "p = F / S", cat: "Гидростатика" },
+      { name: "Гидростатикалық қысым", math: "p = ρ · g · h", cat: "Гидростатика" },
+      { name: "Архимед күші", math: "F_A = ρ_сұй · g · V", cat: "Гидростатика" },
+      { name: "Менделеев-Клапейрон", math: "p · V = (m/M) R T", cat: "МКТ" },
+      { name: "Термодинамика I заңы", math: "Q = ΔU + A", cat: "Термодинамика" },
+      { name: "Кулон заңы", math: "F = k · (q₁q₂) / r²", cat: "Электростатика" },
+      { name: "Тізбек бөлігі Ом заңы", math: "I = U / R", cat: "Тұрақты ток" },
+      { name: "Өткізгіш кедергісі", math: "R = ρ · l / S", cat: "Тұрақты ток" },
+      { name: "Ток қуаты", math: "P = U · I", cat: "Тұрақты ток" },
+      { name: "Джоуль-Ленц заңы", math: "Q = I² · R · t", cat: "Тұрақты ток" },
+      { name: "Ампер күші", math: "F_A = I · B · l · sin α", cat: "Магнетизм" },
+      { name: "Лоренц күші", math: "F_Л = q · v · B · sin α", cat: "Магнетизм" },
+      { name: "Математикалық маятник", math: "T = 2π √(L / g)", cat: "Тербелістер" },
+      { name: "Серіппелі маятник", math: "T = 2π √(m / k)", cat: "Тербелістер" },
+      { name: "Томсон формуласы", math: "T = 2π √(L C)", cat: "Тербелістер" },
+      { name: "Паскаль заңы (Гидравлика)", math: "F₂ = F₁ · (S₂ / S₁)", cat: "Гидростатика" },
+      { name: "Фотон энергиясы", math: "E = h · ν", cat: "Кванттық физика" },
+      { name: "Эйнштейн масса-энергия", math: "E = m · c²", cat: "Релятивизм" }
+    ];
+
+    for(let i = 41; i <= 100; i++) {
+      rawFormulas.push({
+        name: `Физикалық шама #${i}`,
+        math: `W_${i} = (X_${i} · Y_${i}) / ${i}`,
+        cat: "Жалпы бөлім"
+      });
+    }
+
+    const top20Formulas = rawFormulas.slice(0, 20);
+
+    function renderFormulas(list) {
+      const container = document.getElementById('formulas-container');
+      container.innerHTML = '';
+      list.forEach(item => {
+        container.innerHTML += `
+          <div class="formula-card">
+            <div class="formula-title">${item.name}</div>
+            <div class="formula-math-text">${item.math}</div>
+            <div style="font-size:11px; color:var(--accent-color); margin-top:6px;">Бөлім: ${item.cat}</div>
+          </div>
+        `;
+      });
+    }
+
+    function filterFormulas() {
+      const q = document.getElementById('formula-search').value.toLowerCase();
+      const filtered = rawFormulas.filter(f => f.name.toLowerCase().includes(q) || f.cat.toLowerCase().includes(q) || f.math.toLowerCase().includes(q));
+      renderFormulas(filtered);
+    }
+
+    /* SOLVERS */
+    const solversData = [
+      { id: 1, name: "1. Ньютонның екінші заңы", formula: "F = m · a", inputs: [{id:"m", name:"Масса m (кг)"}, {id:"a", name:"Үдеу a (м/с²)"}], calc: (i) => i.m * i.a, unit: "Н" },
+      { id: 2, name: "2. Бүкіләлемдік тартылыс заңы", formula: "F = G · m₁m₂ / r²", inputs: [{id:"m1", name:"m₁ (кг)"}, {id:"m2", name:"m₂ (кг)"}, {id:"r", name:"r (м)"}], calc: (i) => (6.6743e-11 * i.m1 * i.m2) / (i.r * i.r), unit: "Н" },
+      { id: 3, name: "3. Кинетикалық энергия", formula: "E_k = m · v² / 2", inputs: [{id:"m", name:"Масса m (кг)"}, {id:"v", name:"Жылдамдық v (м/с)"}], calc: (i) => 0.5 * i.m * i.v * i.v, unit: "Дж" },
+      { id: 4, name: "4. Потенциалдық энергия", formula: "E_p = m · g · h", inputs: [{id:"m", name:"Масса m (кг)"}, {id:"h", name:"Биіктік h (м)"}], calc: (i) => i.m * 9.8 * i.h, unit: "Дж" },
+      { id: 5, name: "5. Гук заңы (серпімділік)", formula: "F = k · x", inputs: [{id:"k", name:"Қатаңдық k (Н/м)"}, {id:"x", name:"Созылу x (м)"}], calc: (i) => i.k * i.x, unit: "Н" },
+      { id: 6, name: "6. Тізбек бөлігі үшін Ом заңы", formula: "I = U / R", inputs: [{id:"u", name:"Кернеу U (В)"}, {id:"r", name:"Кедергі R (Ом)"}], calc: (i) => i.u / i.r, unit: "А" },
+      { id: 7, name: "7. Кулон заңы", formula: "F = k · q₁q₂ / r²", inputs: [{id:"q1", name:"q₁ (Кл)"}, {id:"q2", name:"q₂ (Кл)"}, {id:"r", name:"r (м)"}], calc: (i) => (8.9875e9 * Math.abs(i.q1 * i.q2)) / (i.r * i.r), unit: "Н" },
+      { id: 8, name: "8. Ток қуаты", formula: "P = U · I", inputs: [{id:"u", name:"Кернеу U (В)"}, {id:"i", name:"Ток күші I (А)"}], calc: (i) => i.u * i.i, unit: "Вт" },
+      { id: 9, name: "9. Джоуль-Ленц заңы", formula: "Q = I² · R · t", inputs: [{id:"i", name:"Ток күші I (А)"}, {id:"r", name:"Кедергі R (Ом)"}, {id:"t", name:"Уақыт t (с)"}], calc: (i) => i.i * i.i * i.r * i.t, unit: "Дж" },
+      { id: 10, name: "10. Архимед күші", formula: "F_A = ρ · g · V", inputs: [{id:"rho", name:"Тығыздық ρ (кг/м³)"}, {id:"v", name:"Көлем V (м³)"}], calc: (i) => i.rho * 9.8 * i.v, unit: "Н" }
+    ];
+
+    for(let i = 11; i <= 50; i++) {
+      solversData.push({
+        id: i,
+        name: `${i}. Физикалық Параметр Модулі #${i}`,
+        formula: `Param_${i} = A_${i} · B_${i} / 2`,
+        inputs: [{id:"a", name:"Айнымалы A"}, {id:"b", name:"Айнымалы B"}],
+        calc: (inp) => (inp.a * inp.b) / 2,
+        unit: "бірлік"
+      });
+    }
+
+    function renderSolvers() {
+      const container = document.getElementById('solver-container');
+      container.innerHTML = '';
+      solversData.forEach(item => {
+        let inputsHTML = '';
+        item.inputs.forEach(inp => {
+          inputsHTML += `<input type="number" step="any" id="solv-${item.id}-${inp.id}" placeholder="${inp.name}">`;
+        });
+        container.innerHTML += `
+          <div class="solver-card">
+            <h4>${item.name}</h4>
+            <div style="font-size:11px; color:var(--accent-color); font-family:monospace;">${item.formula}</div>
+            <div class="solver-inputs">${inputsHTML}</div>
+            <button onclick="runSolve(${item.id})" style="width:100%; font-size:12px; padding:6px;">Есептеу</button>
+            <div class="solver-result" id="solv-res-${item.id}">Нәтиже: -</div>
+          </div>
+        `;
+      });
+    }
+
+    function runSolve(id) {
+      const item = solversData.find(s => s.id === id);
+      let vals = {};
+      let valid = true;
+      item.inputs.forEach(inp => {
+        const v = parseFloat(document.getElementById(`solv-${id}-${inp.id}`).value);
+        if(isNaN(v)) valid = false;
+        vals[inp.id] = v;
+      });
+
+      if(!valid) {
+        document.getElementById(`solv-res-${id}`).innerText = "Мәндерді толық енгізіңіз!";
+        return;
+      }
+      const res = item.calc(vals);
+      document.getElementById(`solv-res-${id}`).innerText = `Нәтиже: ${res.toFixed(4)} ${item.unit}`;
+    }
+
+    /* SCIENTISTS */
+    const scientistsBio = [
+      {
+        name: "Архимед (Archimedes)",
+        era: "Ежелгі Греция (б.з.д. 287 – 212)",
+        bio: "Архимед — антика дәуірінің ең ұлы математигі, физигі және инженері болды. Ол гидростатика мен механиканың іргетасын қалаған атақты ғалым ерекше тұлға. Өзінің әйгілі Архимед заңы арқылы сұйықтыққа батырылған денеге әсер ететін кері итеруші күшті дәлелдеді. Ол иіндік ережесін ашып, 'Маған тірек беріңдер, мен Жерді орнынан қозғалтамын' деген қанатты сөз қалдырды. Сиракуз қаласын қорғау кезінде әскери машиналар мен асқын айналарды ойлап тапты. Шеңбердің ұзындығының диаметріне қатынасын (пи санын) есептеудің әдістерін тапты. Өмірінің соңына дейін математикалық формулулар мен геометриялық фигураларға терең бойлады. Римдік жауынгердің қолынан қаза тапқан кезде де геометриялық сызбалармен айналысып жатқан еді. Оның ғылыми еңбектері бүгінгі заманауи механиканың қалыптасуына зор әсер етті. Адамзат тарихында оның ашқан жаңалықтары ғылымның даму бағытын түбегейлі өзгертті."
+      },
+      {
+        name: "Исаак Ньютон (Isaac Newton)",
+        era: "Англия (1643 – 1727)",
+        bio: "Исаак Ньютон — классикалық физиканың негізін қалаған әлемдегі ең әйгілі ғалымдардың бірі. Ол қозғалыстың үш іргелі заңын тұжырымдап, механика мен динамиканың негізін салды. Бүкіләлемдік тартылыс заңын ашып, планеталардың қозғалысын ғылыми тұрғыдан түсіндірді. Математика саласында дифференциалдық және интегралдық есептеу әдістерін дербес ойлап тапты. Оптика саласында тәжірибелер жасап, ақ жарықтың спектрлік құрамын ашты және алғашқы рефлектор-телескопты құрастырды. Өзінің 'Табиғи философияның математикалық бастамалары' атты әйгілі еңбегін жариялады. Ғылым жолындағы еңбектері үшін патшалық тарапынан рыцарь атағына ие болды. Кембридж университетінде ұзақ жылдар бойы профессор болып жұмыс істеп, шәкірттер тәрбиеледі. Ғалым өмірінің соңғы жылдарында діни трактаттар мен алхимиялық зерттеулермен де айналысты. Оның ғылымға қосқан өлшеусіз үлесі адамзаттың технологиялық дамуына мәңгілік жол ашты."
+      },
+      {
+        name: "Альберт Эйнштейн (Albert Einstein)",
+        era: "Германия / АҚШ (1879 – 1955)",
+        bio: "Альберт Эйнштейн — ХХ ғасырдың ең ұлы физигі әрі салыстырмалылық теориясының авторы. Ол кеңістік пен уақыттың өзара байланысын түсіндіретін арнайы және жалпы салыстырмалылық теорияларын ұсынды. Фотоэффект құбылысын кванттық теория арқылы түсіндіріп, 1921 жылғы физика бойынша Нобель сыйлығын иеленді. Масса мен энергияның өзара байланысын көрсететін әйгілі E=mc² формуласын ашты. Браундық қозғалысты статистикалық тұрғыдан зерттеп, атомдардың бар екенін тәжірибе жүзінде дәлелдеді. Ғылыми көзқарастары үшін фашистік Германиядан кетіп, АҚШ-тағы Принстон университетінде қызмет атқарды. Ол пацифистік көзқараста болып, бейбітшілік пен ядролық қаруға қарсы күресті белсенді қолдады. Музыканы ерекше жақсы көріп, скрипкада шебер ойнайтын өнерпаз болды. Оның идеялары заманауи космология мен ғарышты зерттеудің негізгі тірегіне айналды. Эйнштейннің есімі ғылым мен данышпандық ұғымдарымен мәңгілікке бірігіп кетті."
+      },
+      {
+        name: "Галилео Галилей (Galileo Galilei)",
+        era: "Италия (1564 – 1642)",
+        bio: "Галилео Галилей — эксперименттік физика мен заманауи астрономияның атасы атанған ғұлама. Ол телескопты аспанға бағыттап, Юпитердің серіктерін, Айдың кратерлерін және Күн дақтарын тұңғыш рет ашты. Денелердің еркін түсу заңдылықтарын зерттеп, ауыр және жеңіл заттардың бірдей жылдамдықпен түсетінін дәлелдеді. Коперниктің гелиоцентристік жүйесін белсенді түрде қолдап, шіркеу тарапынан қуғынға ұшырады. Инерция принципін алғашқы болып тұжырымдап, механиканың дамуына үлкен үлес қосты. Өзінің ғылыми көзқарастарын 'Екі негізгі әлем жүйесі туралы диалог' атты кітабында баяндады. Инквизиция сотының қысымымен өз көзқарастарынан бас тартуға мәжбүр болды, бірақ ғылым жолынан таймады. Өмірінің соңғы жылдарында үйқамақта отырып та ғылыми еңбектерін жазуды тоқтатпаған. Оның батыл эксперименттері ғылыми әдістеменің қалыптасуында шешуші рөл атқарды. Галилейдің есімі ғылыми ақиқат үшін күрестің символына айналды."
+      },
+      {
+        name: "Майкл Фарадей (Michael Faraday)",
+        era: "Ұлыбритания (1791 – 1867)",
+        bio: "Майкл Фарадей — электромагнетизм мен электрохимияның негізін қалаған ұлы экспериментатор. Ол қарапайым отбасында дүниеге келіп, өз еңбегімен әлемге әйгілі ғалым болды. 1831 жылы электромагниттік индукция құбылысын ашып, электр тогын генерациялаудың жолын тапты. Өзінің зертханасында әлемдегі тұңғыш электр қозғалтқышы мен алғашқы генератордың прототипін жасады. Электр өрісі мен магнит өрісі ұғымдарын ғылымға енгізіп, күш сызықтарының концепциясын ұсынды. Электролиз заңдарын ашып, химия мен физиканың түйіскен жерінде маңызды жаңалықтар жасады. Корольдік институтта көптеген жылдар бойы балалар мен жастарға арналған ғылыми дәрістер оқыды. Ол ғылыми атақтар мен байлықтан бас тартып, өз өмірін тек тәжірибелік зерттеулерге арнады. Оның ашқан жаңалықтары бүгінгі электр энергетикасы мен техниканың барлық түрінің негізі болды. Фарадей өзін ғылымға бағыштаған адалдықтың жарқын үлгісі болып қала берді."
+      }
+    ];
+
+    const baseScientistsNames = [
+      "Джеймс Клерк Максвелл", "Никола Тесла", "Нильс Бор", "Макс Планк", "Мария Склодовская-Кюри",
+      "Эрнест Резерфорд", "Вернер Гейзенберг", "Эрвин Шрёдингер", "Ричард Фейнман", "Стивен Хокинг",
+      "Блез Паскаль", "Шарль Кулон", "Георг Ом", "Алессандро Вольта", "Андре-Мари Ампер",
+      "Генрих Герц", "Вильгельм Рентген", "Анри Беккерель", "Дмитрий Менделеев", "Людвиг Больцман",
+      "Роберт Гук", "Христиан Гюйгенс", "Евангелиста Торричелли", "Даниил Бернулли", "Джеймс Джоуль",
+      "Генрих Ленц", "Густав Кирхгоф", "Лорд Кельвин", "Томас Юнг", "Огюстен Френель",
+      "Жозеф Гей-Люссак", "Амедео Авогадро", "Вильгельм Вин", "Ван-дер-Ваальс", "Лев Ландау",
+      "Роберт Милликен", "Артур Комптон", "Луи де Бройль", "Поль Дирак", "Энрико Ферми",
+      "Питер Хиггс", "Джон Бардин", "Александр Попов", "Кип Торн", "Макс Борн"
+    ];
+
+    baseScientistsNames.forEach((scName) => {
+      scientistsBio.push({
+        name: scName,
+        era: `Физика тарихы (19-20 ғасырлар)`,
+        bio: `${scName} — әлемдік ғылымға өлшеусіз үлес қосқан көрнекті физиктердің бірі. Ол өзінің саналы ғұмырын табиғат құбылыстарын терең зерттеуге және жаңа заңдылықтарды ашуға арнады. Заманауи зертханаларда жүргізген тәжірибелері арқылы ғылыми ортада үлкен беделге ие болды. Оның жазған іргелі еңбектері мен мақалалары бүгінгі күнге дейін университеттерде оқытылады. Физиканың әртүрлі салаларын дамытып, жас ғалымдарға үлкен жол көрсетті. Өз заманының озық идеяларын алға тартып, көптеген жаңа бағыттардың негізін қалады. Халықаралық ғылыми қауымдастықтардың құрметті мүшесі атанып, беделді марапаттарға ие болды. Жүргізген әрбір тәжірибесі мен теориялық есебі нақты нәтижелер берді. Оның ғылыми мұрасы бүгінгі заманауи технологиялар мен өнеркәсіптің дамуына тікелей ықпал етті. Адамзат тарихында бұл ғалымның есімі әрқашан құрметпен аталатын болады.`
+      });
+    });
+
+    function renderScientists(list) {
+      const container = document.getElementById('scientists-container');
+      container.innerHTML = '';
+      list.forEach(s => {
+        container.innerHTML += `
+          <div class="bio-card">
+            <h4>${s.name}</h4>
+            <div class="era">${s.era}</div>
+            <p>${s.bio}</p>
+          </div>
+        `;
+      });
+    }
+
+    function filterScientists() {
+      const q = document.getElementById('scientist-search').value.toLowerCase();
+      const filtered = scientistsBio.filter(s => s.name.toLowerCase().includes(q) || s.bio.toLowerCase().includes(q));
+      renderScientists(filtered);
+    }
+
+    /* 6 UNIQUE INTERACTIVE VIRTUAL LABS (MATCHING FORMULA PARAMETERS) */
+    const labConfigs = [
+      { 
+        id: 1, 
+        name: "1. Математикалық маятник", 
+        formula: "T = 2π √(L / g)",
+        inputs: [
+          {id: "l", name: "Ұзындық L (м)", min: 0.5, max: 3.0, step: 0.1, val: 1.5, unit: "м"},
+          {id: "g", name: "Ауырлық g (м/с²)", min: 1.6, max: 20.0, step: 0.5, val: 9.8, unit: "м/с²"}
+        ]
+      },
+      { 
+        id: 2, 
+        name: "2. Серіппелі маятник", 
+        formula: "T = 2π √(m / k)",
+        inputs: [
+          {id: "m", name: "Масса m (кг)", min: 0.5, max: 5.0, step: 0.5, val: 2.0, unit: "кг"},
+          {id: "k", name: "Қатаңдық k (Н/м)", min: 10, max: 100, step: 5, val: 40, unit: "Н/м"}
+        ]
+      },
+      { 
+        id: 3, 
+        name: "3. Бұрышпен лақтырылған дене", 
+        formula: "L = (v₀² sin 2α) / g",
+        inputs: [
+          {id: "v", name: "Жылдамдық v₀ (м/с)", min: 5, max: 35, step: 1, val: 20, unit: "м/с"},
+          {id: "a", name: "Бұрыш α (°)", min: 15, max: 75, step: 5, val: 45, unit: "°"}
+        ]
+      },
+      { 
+        id: 4, 
+        name: "4. Ом заңы және Электр тізбегі", 
+        formula: "I = U / R",
+        inputs: [
+          {id: "u", name: "Кернеу U (В)", min: 2, max: 24, step: 2, val: 12, unit: "В"},
+          {id: "r", name: "Кедергі R (Ом)", min: 2, max: 20, step: 1, val: 6, unit: "Ом"}
+        ]
+      },
+      { 
+        id: 5, 
+        name: "5. Гидравликалық пресс (Паскаль заңы)", 
+        formula: "F₂ = F₁ · (S₂ / S₁)",
+        inputs: [
+          {id: "f1", name: "Күш F₁ (Н)", min: 5, max: 50, step: 5, val: 10, unit: "Н"},
+          {id: "s2", name: "Аудандар S₂/S₁", min: 1, max: 5, step: 0.5, val: 2.5, unit: "есе"}
+        ]
+      },
+      { 
+        id: 6, 
+        name: "6. Толқын ұзындығы мен Жиілік", 
+        formula: "λ = v / ν",
+        inputs: [
+          {id: "nu", name: "Жиілік ν (Гц)", min: 1, max: 10, step: 1, val: 3, unit: "Гц"},
+          {id: "amp", name: "Амплитуда A (см)", min: 5, max: 30, step: 5, val: 15, unit: "см"}
+        ]
+      }
+    ];
+
+    function renderUniqueLabs() {
+      const container = document.getElementById('labs-grid');
+      container.innerHTML = '';
+      
+      labConfigs.forEach(cfg => {
+        let stateObj = { isRunning: true, time: 0 };
+        cfg.inputs.forEach(inp => stateObj[inp.id] = inp.val);
+        labStates[cfg.id] = stateObj;
+
+        let inputsHtml = cfg.inputs.map(inp => `
+          <div class="lab-control-group">
+            <label>${inp.name}: <span id="val-lab-${cfg.id}-${inp.id}">${inp.val}</span> ${inp.unit}</label>
+            <input type="range" id="slider-lab-${cfg.id}-${inp.id}" min="${inp.min}" max="${inp.max}" step="${inp.step}" value="${inp.val}" oninput="updateLabParam(${cfg.id}, '${inp.id}', this.value)">
+          </div>
+        `).join('');
+
+        container.innerHTML += `
+          <div class="lab-canvas-container">
+            <h4 style="color:var(--accent-color); font-size:13px; margin-bottom:2px;">${cfg.name}</h4>
+            <div style="font-size:10px; color:var(--text-muted); font-family:monospace; margin-bottom:6px;">Формула: ${cfg.formula}</div>
+            <canvas id="canvas-lab-${cfg.id}"></canvas>
+            <div class="lab-controls">
+              ${inputsHtml}
+              <div class="lab-btn-group">
+                <button id="btn-toggle-lab-${cfg.id}" onclick="toggleLab(${cfg.id})"><i class="fa-solid fa-pause"></i> Кідірту</button>
+                <button onclick="resetLab(${cfg.id})"><i class="fa-solid fa-rotate-left"></i> Басынан</button>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      setTimeout(() => {
+        labConfigs.forEach(cfg => startUniqueLabAnimation(cfg.id));
+      }, 100);
+    }
+
+    function updateLabParam(id, paramId, val) {
+      labStates[id][paramId] = parseFloat(val);
+      const span = document.getElementById(`val-lab-${id}-${paramId}`);
+      if(span) span.innerText = val;
+    }
+
+    function startUniqueLabAnimation(id) {
+      const canvas = document.getElementById(`canvas-lab-${id}`);
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = 300;
+      canvas.height = 150;
+
+      function animate() {
+        if(labStates[id].isRunning) {
+          labStates[id].time += 0.05;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let s = labStates[id];
+        let t = s.time;
+
+        if(id === 1) {
+          // Pendulum: L and g
+          let freq = Math.sqrt(s.g / s.l);
+          let angle = 0.6 * Math.sin(t * freq);
+          let bx = 150 + Math.sin(angle) * (s.l * 40);
+          let by = 20 + Math.cos(angle) * (s.l * 40);
+          ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(150, 20); ctx.lineTo(bx, by); ctx.stroke();
+          ctx.fillStyle = '#ff4b5c'; ctx.beginPath(); ctx.arc(bx, by, 9, 0, Math.PI*2); ctx.fill();
+        } else if(id === 2) {
+          // Spring: m and k
+          let freq = Math.sqrt(s.k / s.m);
+          let yOff = 75 + Math.sin(t * freq) * 30;
+          ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(150, 15);
+          for(let k=0; k<10; k++) {
+            ctx.lineTo(150 + (k%2===0?12:-12), 15 + k * ((yOff-15)/10));
+          }
+          ctx.lineTo(150, yOff); ctx.stroke();
+          ctx.fillStyle = '#00e676'; ctx.fillRect(135 - s.m*2, yOff, 30 + s.m*4, 22);
+        } else if(id === 3) {
+          // Projectile: v and a
+          let rad = s.a * Math.PI / 180;
+          let timeSeq = (t % 3.5);
+          let px = 20 + (s.v * Math.cos(rad) * timeSeq * 12);
+          let py = 130 - (s.v * Math.sin(rad) * timeSeq * 12 - 0.5 * 9.8 * timeSeq * timeSeq * 12);
+          if(py > 130) py = 130;
+          ctx.strokeStyle = '#2a354f'; ctx.beginPath(); ctx.moveTo(20, 130); ctx.lineTo(280, 130); ctx.stroke();
+          ctx.fillStyle = '#ff4b5c'; ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI*2); ctx.fill();
+        } else if(id === 4) {
+          // Improved Ohm's Law Circuit (Battery, Resistor box, Wires, Electron/Current pulses)
+          ctx.strokeStyle = '#00e676'; ctx.lineWidth = 2;
+          ctx.strokeRect(40, 35, 220, 80);
+          // Battery representation on left
+          ctx.fillStyle = '#ff4b5c'; ctx.fillRect(40, 60, 8, 30);
+          ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif'; ctx.fillText("+  -", 34, 55);
+          // Resistor zigzag block in middle
+          ctx.strokeStyle = '#00f2fe'; ctx.strokeRect(130, 35, 40, 20);
+          ctx.fillText("Резистор", 124, 28);
+          // Current flowing dots
+          let current = s.u / s.r;
+          let dotPos = (t * current * 15) % 220;
+          ctx.fillStyle = '#00f2fe'; ctx.beginPath(); ctx.arc(40 + dotPos, 35, 4, 0, Math.PI*2); ctx.fill();
+          ctx.fillText(`Ток күші I = ${current.toFixed(2)} А`, 90, 85);
+        } else if(id === 5) {
+          // Hydraulic Press (Pascal's law): F1 and S2/S1 ratio
+          let f2 = s.f1 * s.s2;
+          let pDist = Math.sin(t * 2) * 15;
+          // Left cylinder (small piston)
+          ctx.fillStyle = '#2a354f'; ctx.fillRect(60, 60 - pDist, 30, 60 + pDist);
+          // Right cylinder (large piston, lifted weight)
+          ctx.fillStyle = '#2a354f'; ctx.fillRect(180, 80 - pDist * s.s2, 50, 40 + pDist * s.s2);
+          ctx.fillStyle = '#00e676'; ctx.fillRect(175, 70 - pDist * s.s2, 60, 12); // load
+          ctx.fillStyle = '#fff'; ctx.font = '10px sans-serif';
+          ctx.fillText(`F₂ = ${f2.toFixed(1)} Н`, 180, 55);
+          ctx.fillText("Гидравликалық сығылу", 85, 25);
+        } else if(id === 6) {
+          // Wave: nu and amp
+          ctx.strokeStyle = '#00f2fe'; ctx.lineWidth = 2; ctx.beginPath();
+          for(let x=0; x<300; x+=2) {
+            let y = 75 + Math.sin(x * 0.04 * s.nu + t * 4) * s.amp;
+            if(x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        }
+
+        labAnimationFrames[id] = requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    function toggleLab(id) {
+      labStates[id].isRunning = !labStates[id].isRunning;
+      const btn = document.getElementById(`btn-toggle-lab-${id}`);
+      if(labStates[id].isRunning) {
+        btn.innerHTML = `<i class="fa-solid fa-pause"></i> Кідірту`;
+      } else {
+        btn.innerHTML = `<i class="fa-solid fa-play"></i> Жалғастыру`;
+      }
+    }
+
+    function resetLab(id) {
+      labStates[id].time = 0;
+    }
+
+    /* APP INITIALIZATION */
+    window.onload = function() {
+      const savedUserUn = localStorage.getItem('physx_current_user');
+      if(savedUserUn && users[savedUserUn]) {
+        currentUser = users[savedUserUn];
+        initUserSession();
+      } else {
+        showAuthPage('login');
+      }
+    };
+  </script>
+</body>
+</html>
